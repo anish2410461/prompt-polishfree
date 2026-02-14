@@ -10,7 +10,7 @@ const MODES = [
     { id: "Academic Output", icon: "🎓", label: "Academic Output" }
 ];
 
-export default function PromptInput({ onPolish, isLoading, mode, onModeChange, isPro }) {
+export default function PromptInput({ onPolish, isLoading, mode, onModeChange }) {
     const [input, setInput] = useState("");
 
     const handleSubmit = () => {
@@ -25,24 +25,18 @@ export default function PromptInput({ onPolish, isLoading, mode, onModeChange, i
             {/* Optimization Modes */}
             <div className="flex flex-wrap gap-2">
                 {MODES.map((m) => {
-                    const isLocked = !isPro && m.id !== "Reasoning";
                     return (
                         <button
                             key={m.id}
-                            onClick={() => !isLocked && onModeChange(m.id)}
+                            onClick={() => onModeChange(m.id)}
                             disabled={isLoading}
                             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border flex items-center gap-2 relative ${mode === m.id
-                                    ? "bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-500/20"
-                                    : isLocked
-                                        ? "bg-white/5 border-white/5 text-white/20 cursor-not-allowed opacity-60"
-                                        : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"
+                                ? "bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-500/20"
+                                : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"
                                 }`}
                         >
                             <span>{m.icon}</span>
                             {m.label}
-                            {isLocked && (
-                                <span className="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded ml-1 border border-blue-500/20">PRO</span>
-                            )}
                         </button>
                     );
                 })}
@@ -70,7 +64,7 @@ export default function PromptInput({ onPolish, isLoading, mode, onModeChange, i
                         Analyzing Prompt...
                     </span>
                 ) : (
-                    "✨ Upgrade Prompt"
+                    "✨ Polish Prompt"
                 )}
             </button>
         </div>

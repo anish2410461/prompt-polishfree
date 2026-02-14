@@ -17,19 +17,6 @@ export default function Home() {
   const [useMock, setUseMock] = useState(false);
   const [mode, setMode] = useState("Reasoning");
   const [originalPrompt, setOriginalPrompt] = useState("");
-  const [subscription, setSubscription] = useState({ plan: 'free', remaining: 5 });
-
-  const fetchSubscription = async () => {
-    try {
-      const res = await fetch("/api/user/subscription");
-      if (res.ok) {
-        const data = await res.json();
-        setSubscription(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch subscription", error);
-    }
-  };
 
   // Load data
   useEffect(() => {
@@ -41,8 +28,6 @@ export default function Home() {
         console.warn("Failed to parse history", e);
       }
     }
-
-    fetchSubscription();
   }, []);
 
   const saveHistory = (newHistory) => {
@@ -69,13 +54,12 @@ export default function Home() {
     setOutput(item.enhanced);
     setStatus("Done");
     setIsHistoryOpen(false);
-    // Scroll to the tool if needed, but for now just show
     document.getElementById('app-tool')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handlePolishSafe = async (inputText) => {
     setIsLoading(true);
-    setStatus("Checking Usage...");
+    setStatus("System Loading...");
     setOriginalPrompt(inputText);
     setOutput("");
 
@@ -124,7 +108,6 @@ export default function Home() {
         accumulatedText += chunkValue;
         setOutput((prev) => prev + chunkValue);
 
-        // Dynamic status updates based on tags
         if (accumulatedText.includes("[VERSION_A]")) setStatus("Generating Variations...");
         else if (accumulatedText.includes("[IMPROVEMENTS]")) setStatus("Structuring...");
         else if (accumulatedText.includes("[WEAKNESSES]")) setStatus("Scoring...");
@@ -132,18 +115,11 @@ export default function Home() {
 
       setStatus("Done");
       addToHistory(inputText, accumulatedText);
-      await fetchSubscription();
 
     } catch (error) {
       console.error("Error polishing prompt:", error);
       setStatus("Error");
-
-      if (error.message.includes("Free trial limit reached")) {
-        setStatus("Limit Reached");
-        setOutput("⚠️ **Free Trial Limit Reached** \n\nYou have used your 5 free prompt optimizations for today. \n\n[Upgrade to Pro](#pricing) to unlock unlimited optimizations, advanced scoring, and all optimization modes.");
-      } else {
-        setOutput(`⚠️ Failed to polish prompt. \n\nError: ${error.message || "Unknown error"}. \n\n💡 Tip: Try switching to "Demo Mode" using the toggle above to test the UI without an API key.`);
-      }
+      setOutput(`⚠️ Failed to polish prompt. \n\nError: ${error.message || "Unknown error"}. \n\n💡 Tip: Try switching to "Demo Mode" using the toggle above to test the UI without an API key.`);
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +165,7 @@ export default function Home() {
             </span>.
           </h1>
           <p className="max-w-2xl mx-auto text-xl md:text-2xl text-slate-300 font-light mb-12">
-            Analyze, score, and optimize your prompts like a pro.
+            Analyze, score, and optimize your prompts like a pro. Free for everyone.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
             <button
@@ -236,21 +212,6 @@ export default function Home() {
                     <div className={`w-2.5 h-2.5 rounded-full ${status === 'Ready' ? 'bg-green-400' : status === 'Error' ? 'bg-red-500' : 'bg-blue-400 animate-pulse'}`}></div>
                     <span className="text-blue-400/80 text-sm font-medium tracking-wide uppercase">{status === 'Ready' ? 'System Ready' : status}</span>
                   </div>
-
-                  {/* Usage HUD */}
-                  <div className="flex items-center gap-4">
-                    <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${subscription.plan === 'pro'
-                      ? 'bg-blue-500/20 border-blue-500/30 text-blue-400'
-                      : 'bg-white/5 border-white/10 text-white/40'
-                      }`}>
-                      {subscription.plan} Plan
-                    </div>
-                    {subscription.plan === 'free' && (
-                      <div className="text-sm font-medium text-white/60">
-                        {subscription.remaining} / 5 <span className="text-white/20">Credits</span>
-                      </div>
-                    )}
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-12">
@@ -259,7 +220,7 @@ export default function Home() {
                     isLoading={isLoading}
                     mode={mode}
                     onModeChange={setMode}
-                    isPro={subscription.plan === 'pro'}
+                    isPro={true}
                   />
 
                   <OutputCard
@@ -267,80 +228,10 @@ export default function Home() {
                     isLoading={isLoading}
                     onClear={handleClear}
                     originalPrompt={originalPrompt}
-                    isPro={subscription.plan === 'pro'}
+                    isPro={true}
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PRICING SECTION */}
-      <section className="py-32 px-6" id="pricing">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-8">Choose Your Plan</h2>
-          <p className="text-xl text-slate-400 mb-20">Unlock the full power of Prompt Engineering.</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Free Plan */}
-            <div className="glass-strong p-12 rounded-[2.5rem] border border-white/5 space-y-8 flex flex-col text-left">
-              <div>
-                <h3 className="text-2xl font-bold">Free</h3>
-                <p className="text-slate-500 mt-2">Perfect for casual use.</p>
-              </div>
-              <div className="text-5xl font-bold">$0<span className="text-lg text-slate-600 font-normal">/mo</span></div>
-              <ul className="space-y-4 flex-grow">
-                {["5 prompt optimizations / day", "Basic text enhancement", "No advanced scoring", "No optimization modes"].map(f => (
-                  <li key={f} className="flex items-center gap-3 text-slate-400">
-                    <span className="text-red-500/50">✕</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <button disabled className="w-full py-4 bg-white/5 text-white/40 rounded-2xl font-bold border border-white/10">Current Plan</button>
-            </div>
-
-            {/* Pro Plan */}
-            <div className="glass-strong p-12 rounded-[2.5rem] border border-blue-500/30 space-y-8 flex flex-col text-left relative overflow-hidden group">
-              <div className="absolute top-0 right-0 px-6 py-2 bg-blue-600 text-white text-xs font-bold uppercase tracking-widest rounded-bl-2xl">Recommended</div>
-              <div>
-                <h3 className="text-2xl font-bold">Pro</h3>
-                <p className="text-slate-400 mt-2">For power users & devs.</p>
-              </div>
-              <div className="text-5xl font-bold">₹10<span className="text-lg text-slate-600 font-normal">/mo</span></div>
-              <ul className="space-y-4 flex-grow">
-                {[
-                  "Unlimited prompt optimizations",
-                  "Full Prompt Intelligence Scoring",
-                  "All Optimization Modes (Code, Reasoning, etc.)",
-                  "Multi-variation output (A/B testing)",
-                  "Advanced Why-This-Is-Better analysis"
-                ].map(f => (
-                  <li key={f} className="flex items-center gap-3">
-                    <span className="text-blue-500">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={async () => {
-                  try {
-                    const res = await fetch("/api/create-checkout-session", { method: "POST" });
-                    const data = await res.json();
-
-                    if (res.ok && data.url) {
-                      window.location.href = data.url;
-                    } else {
-                      alert(`Checkout error: ${data.error || "Unknown error"}`);
-                    }
-                  } catch (error) {
-                    console.error("Checkout error:", error);
-                    alert("Failed to initiate checkout. Ensure your STRIPE_PRICE_ID is set correctly in .env.local");
-                  }
-                }}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20 hover:scale-[1.02] transition-all"
-              >
-                {subscription.plan === 'pro' ? 'Manage Subscription' : 'Upgrade to Pro'}
-              </button>
             </div>
           </div>
         </div>

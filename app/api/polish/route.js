@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth } from "@clerk/nextjs/server";
-import { getUserPlan, incrementUserUsage } from "@/lib/db";
 
 export async function POST(req) {
     const apiKey = process.env.GOOGLE_API_KEY;
@@ -12,17 +11,6 @@ export async function POST(req) {
     const { userId } = await auth();
     if (!userId) {
         return new Response("Unauthorized", { status: 401 });
-    }
-
-    // Check plan and usage from DB (Server-side Source of Truth)
-    // Fallback to free if DB keys are missing (demo mode)
-    let planData = { plan: 'free', prompts_used: 0 };
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        planData = await getUserPlan(userId);
-    }
-
-    if (planData.plan === 'free' && planData.prompts_used >= 5) {
-        return new Response("Free trial limit reached. Upgrade to Pro to continue.", { status: 403 });
     }
 
     const { prompt, mode = "Reasoning" } = await req.json();
@@ -90,11 +78,6 @@ export async function POST(req) {
                 }
             },
         });
-
-        // Increment usage after successful stream setup
-        if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-            await incrementUserUsage(userId);
-        }
 
         return new Response(readable, {
             headers: {
