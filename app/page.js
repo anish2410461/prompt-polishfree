@@ -245,7 +245,7 @@ export default function Home() {
             <div className="space-y-4 p-8 rounded-2xl border border-white/5 bg-white/[0.02]">
               <div className="text-red-400 text-3xl">❌</div>
               <h3 className="text-xl font-semibold">Vague Responses</h3>
-              <p className="text-slate-400 leading-relaxed">Getting "as an AI model" lectures instead of the actual data you need.</p>
+              <p className="text-slate-400 leading-relaxed">Getting &quot;as an AI model&quot; lectures instead of the actual data you need.</p>
             </div>
             <div className="space-y-4 p-8 rounded-2xl border border-white/5 bg-white/[0.02]">
               <div className="text-red-400 text-3xl">❌</div>
@@ -274,11 +274,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
             <div className="glass-strong p-10 rounded-3xl border-l-4 border-blue-500">
               <h4 className="text-blue-400 font-bold mb-2 uppercase text-xs tracking-widest">Before</h4>
-              <p className="text-slate-500 italic">"Write me a blog post about coffee."</p>
+              <p className="text-slate-500 italic">&quot;Write me a blog post about coffee.&quot;</p>
             </div>
             <div className="glass-strong p-10 rounded-3xl border-l-4 border-emerald-500">
               <h4 className="text-emerald-400 font-bold mb-2 uppercase text-xs tracking-widest">After</h4>
-              <p className="text-slate-200">"Act as a professional food writer. Create a 1,000-word SEO-optimized blog post about artisan coffee beans, focusing on the flavor profiles of Ethiopian vs. Colombian roast..."</p>
+              <p className="text-slate-200">&quot;Act as a professional food writer. Create a 1,000-word SEO-optimized blog post about artisan coffee beans, focusing on the flavor profiles of Ethiopian vs. Colombian roast...&quot;</p>
             </div>
           </div>
         </div>
@@ -315,7 +315,7 @@ export default function Home() {
             <div className={`absolute top-0 right-0 w-64 h-64 bg-${ELECTRIC_BLUE}/20 blur-[100px] -z-10 group-hover:bg-blue-500/30 transition-all`}></div>
             <div className="text-5xl md:text-7xl mb-10 opacity-20 group-hover:opacity-40 transition-opacity">“</div>
             <p className="text-2xl md:text-3xl font-medium leading-relaxed mb-12">
-              Since using PromptPolish, our AI's accuracy jumped by <span className="text-blue-400">40%</span>. It's a game changer for our content workflow and dev productivity.
+              Since using PromptPolish, our AI&apos;s accuracy jumped by <span className="text-blue-400">40%</span>. It&apos;s a game changer for our content workflow and dev productivity.
             </p>
             <div className="flex items-center gap-5">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-2xl font-bold border border-white/10 overflow-hidden">
